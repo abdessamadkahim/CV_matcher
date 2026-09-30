@@ -27,3 +27,9 @@ def test_extension_non_supportee():
             b"bonjour",
             5 * 1024 * 1024,
         )
+def test_extension_qui_ment():
+    with pytest.raises(UnsupportedFileTypeError):
+        extract_text( "cv.pdf",
+            b"ceci n'est pas un pdf",
+            5 * 1024 * 1024,)
+

@@ -22,6 +22,11 @@ def extract_text(filename:str,content:bytes,max_bytes:int)->str:
   if ext not in SUPPORTED_EXTENSIONS:
         raise UnsupportedFileTypeError(
             "Seuls les fichiers .pdf et .docx sont acceptés.")
-  
+  if ext==".pdf":
+    if not content.startswith(_PDF_MAGIC):
+      raise UnsupportedFileTypeError(
+        "le fichier a l'extesnion .pdf mais il est pas vraiment un fichier  pdf"
+      )
+    
         
     
