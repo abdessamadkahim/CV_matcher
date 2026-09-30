@@ -9,7 +9,7 @@ def test_imports():
     assert _PDF_MAGIC == b"%PDF"
     assert _ZIP_MAGIC == b"PK"
 import pytest
-from app.exceptions import FileTooLargeError
+from app.exceptions import FileTooLargeError,UnsupportedFileTypeError
 from app.services.file_parser import extract_text
 
 
@@ -19,4 +19,11 @@ def test_fichier_trop_gros():
             "cv.pdf",
             b"123456",
             max_bytes=5,
+        )
+def test_extension_non_supportee():
+    with pytest.raises(UnsupportedFileTypeError):
+        extract_text(
+            "cv.txt",
+            b"bonjour",
+            5 * 1024 * 1024,
         )
