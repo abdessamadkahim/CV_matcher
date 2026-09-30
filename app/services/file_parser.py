@@ -11,3 +11,10 @@ from app.exceptions import EmptyDocumentError, FileTooLargeError, UnsupportedFil
 SUPPORTED_EXTENSIONS = {".pdf", ".docx"}
 _PDF_MAGIC = b"%PDF"
 _ZIP_MAGIC = b"PK"
+
+
+def extract_text(filename:str,content:bytes,max_bytes:int)->str:
+  if(len(content)>max_bytes):
+    raise FileTooLargeError(f"Le fichier dépasse la limite de "
+            f"{max_bytes // (1024 * 1024)} Mo.")
+    
