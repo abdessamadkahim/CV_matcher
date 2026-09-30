@@ -70,3 +70,49 @@ class ResumeData(BaseModel):
     total_years_experience: float | None = Field(
         None, description="Toujours laisser vide. Calculé par l'application."
     )
+    
+    
+    
+
+
+# ------------------------------------------------------------------ #
+# OFFRE D'EMPLOI (JOB DESCRIPTION)
+# ------------------------------------------------------------------ #
+# Literal[...] limite le champ à ces valeurs exactes : impossible d'inventer "super-senior".
+Seniority = Literal["intern", "junior", "mid", "senior", "lead", "unspecified"]
+
+
+class JobDescriptionData(BaseModel):
+    """Représentation structurée d'UNE offre d'emploi."""
+
+    job_title: str | None = Field(None, description="Intitulé du poste tel qu'écrit.")
+    company: str | None = Field(None, description="Entreprise qui recrute, si nommée.")
+    seniority: Seniority = Field(
+        "unspecified",
+        description="Niveau déduit du titre et des exigences. 'unspecified' si impossible à déterminer.",
+    )
+    min_years_experience: float | None = Field(
+        None, description="Années d'expérience minimum EXPLICITEMENT demandées (le plus petit nombre d'une fourchette)."
+    )
+    required_skills: list[str] = Field(
+        default_factory=list,
+        description="Compétences OBLIGATOIRES ('requis', 'must have'). Une par élément, en nom court (ex: 'Python').",
+    )
+    nice_to_have_skills: list[str] = Field(
+        default_factory=list,
+        description="Compétences OPTIONNELLES ('un plus', 'bonus', 'apprécié').",
+    )
+    soft_skills: list[str] = Field(default_factory=list, description="Ex: 'communication', 'autonomie'.")
+    responsibilities: list[str] = Field(
+        default_factory=list, description="Missions principales, chacune en une phrase courte."
+    )
+    education_requirements: str | None = Field(
+        None, description="Diplôme demandé, si indiqué (ex: 'Bac+5 en informatique')."
+    )
+    domain_keywords: list[str] = Field(
+        default_factory=list, description="Termes métier (ex: 'fintech', 'computer vision')."
+    )
+
+
+class JobDescriptionRequest(BaseModel):
+    text: str = Field(..., description="Le texte brut de l'offre d'emploi, collé par l'utilisateur.")
