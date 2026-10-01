@@ -2,15 +2,11 @@ import io
 from pathlib import Path
 
 import pdfplumber
-from docx import Document
-from docx.table import Table
-from docx.text.paragraph import Paragraph
 
 from app.exceptions import EmptyDocumentError, FileTooLargeError, UnsupportedFileTypeError
 
-SUPPORTED_EXTENSIONS = {".pdf", ".docx"}
+SUPPORTED_EXTENSIONS = {".pdf"}
 _PDF_MAGIC = b"%PDF"
-_ZIP_MAGIC = b"PK"
 
 
 def extract_text(filename:str,content:bytes,max_bytes:int)->str:
@@ -21,7 +17,7 @@ def extract_text(filename:str,content:bytes,max_bytes:int)->str:
 
   if ext not in SUPPORTED_EXTENSIONS:
         raise UnsupportedFileTypeError(
-            "Seuls les fichiers .pdf et .docx sont acceptés.")
+            "Seuls les fichiers .pdf  est accepté.")
   if ext==".pdf":
     if not content.startswith(_PDF_MAGIC):
       raise UnsupportedFileTypeError(
@@ -41,7 +37,7 @@ def _extract_pdf(content:bytes)->str:
     text="\n\n".join(pages).strip()
     if not text:
         raise EmptyDocumentError("aucun text trouve ")
-    return text
+    return clean_text(text)
 def clean_text(text: str) -> str:
     """Nettoie le texte extrait d'un document."""
 

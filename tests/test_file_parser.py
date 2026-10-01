@@ -2,12 +2,10 @@ def test_imports():
     from app.services.file_parser import (
         SUPPORTED_EXTENSIONS,
         _PDF_MAGIC,
-        _ZIP_MAGIC,
     )
 
-    assert SUPPORTED_EXTENSIONS == {".pdf", ".docx"}
+    assert SUPPORTED_EXTENSIONS == {".pdf"}
     assert _PDF_MAGIC == b"%PDF"
-    assert _ZIP_MAGIC == b"PK"
 import pytest
 from app.exceptions import FileTooLargeError,UnsupportedFileTypeError,EmptyDocumentError
 from app.services.file_parser import extract_text
@@ -70,3 +68,33 @@ def test_clean_text():
     )
     
 
+from app.schemas import (
+    Contact,
+    EducationItem,
+    ResumeData,
+)
+
+
+def test_resume_data():
+    resume = ResumeData(
+        contact=Contact(
+            name="Sara Martin",
+            email="sara@example.com",
+        ),
+        summary="Développeuse Python",
+        skills=["Python", "SQL", "Git"],
+        education=[
+            EducationItem(
+                institution="ISIMA",
+                degree="Diplôme d'ingénieur",
+                field_of_study="Informatique",
+                start_date="2023",
+                end_date="2026",
+            )
+        ],
+    )
+
+    assert resume.contact.name == "Sara Martin"
+    assert resume.contact.email == "sara@example.com"
+    assert "Python" in resume.skills
+    assert resume.education[0].institution == "ISIMA"
