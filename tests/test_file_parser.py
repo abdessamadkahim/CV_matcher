@@ -9,8 +9,9 @@ def test_imports():
     assert _PDF_MAGIC == b"%PDF"
     assert _ZIP_MAGIC == b"PK"
 import pytest
-from app.exceptions import FileTooLargeError,UnsupportedFileTypeError
+from app.exceptions import FileTooLargeError,UnsupportedFileTypeError,EmptyDocumentError
 from app.services.file_parser import extract_text
+from app.services.file_parser import clean_text
 
 
 def test_fichier_trop_gros():
@@ -32,4 +33,40 @@ def test_extension_qui_ment():
         extract_text( "cv.pdf",
             b"ceci n'est pas un pdf",
             5 * 1024 * 1024,)
+
+
+def test_vrai_pdf():
+    with open("samples/sara martin.pdf", "rb") as f:
+        contenu = f.read()
+
+    texte = extract_text(
+        "sara martin.pdf",
+        contenu,
+        5 * 1024 * 1024
+    )
+
+    print("\n--- TEXTE EXTRAIT ---")
+    print(texte)
+
+    assert texte
+def test_clean_text():
+    text= """
+    Sara Martin
+
+
+    Développeuse Python
+
+    
+    FORMATION
+    ISIMA"""
+    resultat=clean_text(text)
+    print("\n -----------texte nettoyé---------")
+    print(resultat)
+    assert resultat==(
+        "Sara Martin\n"
+        "Développeuse Python\n"
+        "FORMATION\n"
+        "ISIMA"
+    )
+    
 
