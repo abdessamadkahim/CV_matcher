@@ -87,3 +87,23 @@ def fix_pdf_encoding(text: str) -> str:
     return text
         
     
+def _extract_pdf_words(content: bytes) -> str:
+    pages = []
+
+    try:
+        with pdfplumber.open(io.BytesIO(content)) as pdf:
+            for page in pdf.pages:
+                words = page.extract_words(
+                    x_tolerance=3,
+                    y_tolerance=3,
+                )
+
+                text = " ".join(word["text"] for word in words)
+                pages.append(text)
+
+    except Exception as exc:
+        raise UnsupportedFileTypeError(
+            f"Impossible de lire le PDF : {exc}"
+        ) from exc
+
+    return "\n\n".join(pages)
