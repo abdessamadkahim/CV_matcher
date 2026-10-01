@@ -37,7 +37,9 @@ def _extract_pdf(content:bytes)->str:
     text="\n\n".join(pages).strip()
     if not text:
         raise EmptyDocumentError("aucun text trouve ")
-    return clean_text(text)
+    text = clean_text(text)
+    text = fix_pdf_encoding(text)
+    return text
 def clean_text(text: str) -> str:
     """Nettoie le texte extrait d'un document."""
 
@@ -50,5 +52,38 @@ def clean_text(text: str) -> str:
             lines.append(line)
 
     return "\n".join(lines)
+  
+
+
+def fix_pdf_encoding(text: str) -> str:
+    """Corrige certains caractères mal décodés lors de l'extraction PDF."""
+
+    replacements = {
+        "Ø": "é",
+        "ø": "è",
+        "Ł": "è",
+        "Ø": "é",
+        "˚": "°",
+        "(cid:22)": "–",
+        "(cid:136)": "•",
+        "(cid:224)": "à",
+        "(cid:247)": "œ",
+        "(cid:201)": "É",
+        "(cid:192)": "À",
+        "(cid:231)": "ç",
+        "(cid:244)": "ô",
+        "(cid:232)": "è",
+        "(cid:233)": "é",
+        "(cid:234)": "ê",
+        "(cid:235)": "ë",
+        "(cid:238)": "î",
+        "(cid:239)": "ï",
+        "(cid:249)": "ù",
+    }
+
+    for wrong, correct in replacements.items():
+        text = text.replace(wrong, correct)
+
+    return text
         
     

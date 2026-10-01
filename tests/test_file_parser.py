@@ -8,8 +8,11 @@ def test_imports():
     assert _PDF_MAGIC == b"%PDF"
 import pytest
 from app.exceptions import FileTooLargeError,UnsupportedFileTypeError,EmptyDocumentError
-from app.services.file_parser import extract_text
-from app.services.file_parser import clean_text
+from app.services.file_parser import (
+    extract_text,
+    clean_text,
+    fix_pdf_encoding,
+)
 
 
 def test_fichier_trop_gros():
@@ -98,3 +101,16 @@ def test_resume_data():
     assert resume.contact.email == "sara@example.com"
     assert "Python" in resume.skills
     assert resume.education[0].institution == "ISIMA"
+
+
+def test_fix_pdf_encoding():
+    texte = "(cid:201)tudiant IngØnieur en informatique"
+
+    resultat = fix_pdf_encoding(texte)
+
+    print("\n========== ENCODAGE ==========")
+    print("Avant :", texte)
+    print("Après :", resultat)
+    print("==============================")
+
+    assert "Étudiant" in resultat
