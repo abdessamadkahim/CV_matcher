@@ -1,9 +1,16 @@
-from app.schemas import ResumeData
 from openai import OpenAI
 
+from app.config import get_settings
 from app.exceptions import LLMExtractionError
+from app.schemas import ResumeData
 
-client = OpenAI()
+
+config = get_settings()
+
+client = OpenAI(
+    api_key=config.llm_api_key,
+    base_url=config.llm_base_url,
+)
 
 
 SYSTEM_PROMPT = """
@@ -24,13 +31,33 @@ Règles importantes :
 - Pour total_years_experience, laisse toujours null.
 """
 
+
 def parse_resume(text: str) -> ResumeData:
-    """Transforme le texte d'un CV en données structurées."""
+    """Transforme le texte brut d'un CV en ResumeData avec un LLM."""
 
     if not text.strip():
         return ResumeData()
 
-    # Pour le moment, extraction simple.
-    # L'appel au LLM sera ajouté apres les tests de structure retourne.
+    try:
+        response = client.responses.parse(
+            model=config.llm_model,
+            input=[
+                {
+                    "role": "system",
+                    "content": SYSTEM_PROMPT,
+                },
+                {
+                    "role": "user",
+                    "content": text,
+                },
+            ],
+            text_format=ResumeData,
+            max_output_tokens=config.llm_max_tokens,
+        )
 
-    return ResumeData()
+        return response.output_parsed
+
+    except Exception as exc:
+        raise LLMExtractionError(
+            f"Erreur lors de l'extraction du CV avec le LLM : {exc}"
+        ) from exc

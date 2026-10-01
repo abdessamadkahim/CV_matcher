@@ -7,8 +7,8 @@ class Settings(BaseSettings):
     # --- Connexion à l'IA (lues depuis le fichier .env) ---
     llm_base_url: str = "https://api.groq.com/openai/v1"
     llm_api_key: str = ""
-    llm_model: str = "llama-3.3-70b-versatile"
-    llm_max_tokens: int = 4096
+    llm_model: str = "openai/gpt-oss-120b"
+    llm_max_tokens: int = 8192
     llm_max_attempts: int = 2
 
     # --- Limites de sécurité ---
